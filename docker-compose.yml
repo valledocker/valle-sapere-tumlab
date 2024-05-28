@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  sapere-front:
+    image: vallelabs/sapere-frontend:0.10.2rc1
+    container_name: sapere-front
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "tumlab.local:192.168.4.1"
+    environment:
+      NEXT_PUBLIC_API_URL : http://tumlab.local:4010
+      NEXT_PUBLIC_TEMPLATE_CREATE : http://tumlab.local:4010/templates/create-users
+    ports:
+      - "3003:3000"
+    networks:
+      - valle-sapere-net
+
+  sapere-back:
+    image: vallelabs/sapere-backend:0.6.1
+    container_name: sapere-back
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "tumlab.local:192.168.4.1"
+    env_file:
+      - /tumlab/apps/envs/.env-sapere-back
+    ports:
+      - "4010:3000"
+    networks:
+      - valle-sapere-net
+  keycloak:
+    image: docker.io/bitnami/keycloak:20
+    container_name: sapere_keycloak
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "tumlab.local:192.168.4.1"
+    environment:
+      KEYCLOAK_CREATE_ADMIN_USER: true
+      KEYCLOAK_ADMIN_USER: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+      KEYCLOAK_MANAGEMENT_USER: manager
+      KEYCLOAK_MANAGEMENT_PASSWORD: password
+      KEYCLOAK_DATABASE_HOST: host.docker.internal
+      KEYCLOAK_DATABASE_PORT: 5432
+      KEYCLOAK_DATABASE_NAME: keycloaksapere
+      KEYCLOAK_DATABASE_USER: postgres
+      KEYCLOAK_DATABASE_PASSWORD: Tumlab2022*
+      KEYCLOAK_DATABASE_SCHEMA: public
+      KEYCLOAK_HTTP_PORT: 8080
+      KEYCLOAK_HTTPS_PORT: 8443
+      KEYCLOAK_BIND_ADDRESS: 0.0.0.0
+      KEYCLOAK_ENABLE_STATISTICS: true
+      KEYCLOAK_PRODUCTION: false
+      KC_HTTP_RELATIVE_PATH: "/auth"
+      KEYCLOAK_LOG_LEVEL: INFO
+    ports:
+      - 8079:8080
+    networks:
+      - valle-sapere-net
+
+  sapere-game:
+    image: vallelabs/sapere-game:2.5.7
+    container_name: sapere-game
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "tumlab.local:192.168.4.1"
+    ports:
+      - "2999:80"
+    networks:
+      - valle-sapere-net
+
+networks:
+  valle-sapere-net:
+    driver: bridge
