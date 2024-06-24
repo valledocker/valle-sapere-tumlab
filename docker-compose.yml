@@ -15,7 +15,18 @@ services:
       - "3003:3000"
     networks:
       - valle-sapere-net
-
+  storage_sapere:
+    image: minio/minio:latest
+    container_name: storage_sapere
+    restart: unless-stopped
+    environment:
+      MINIO_BUCKET: "${STORAGE_BUCKET_NAME:-sapere-bucket}"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    volumes:
+      - 'minio_data:/data'
   sapere-back:
     image: vallelabs/sapere-backend:0.6.1
     container_name: sapere-back
@@ -23,8 +34,44 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "tumlab.local:192.168.4.1"
-    env_file:
-      - /tumlab/apps/envs/.env-sapere-back
+    environment:
+      BACKEND_URL : http://tumlab.local:4010
+      DB_DATABASE : sapere
+      DB_HOST : host.docker.internal
+      DB_PASSWORD : Tumlab2022*
+      DB_PORT : 3306
+      DB_USER : root
+      EMAIL_FROM : test@localhost.local
+      EMAIL_HOST : test.localhost.local
+      EMAIL_PASSWORD : test
+      EMAIL_PORT : 587
+      EMAIL_SECURE : false
+      EMAIL_USER : test@localhost.local
+      KEYCLOAK_AUTH_SERVER_URL : http://tumlab.local:8079/auth
+      KEYCLOAK_CLIENT_ID : sapere-client
+      KEYCLOAK_DB_ADDR : host.docker.internal
+      KEYCLOAK_DB_DATABASE : keycloaksapere
+      KEYCLOAK_DB_PASSWORD : Tumlab2022*
+      KEYCLOAK_DB_PORT : 5432
+      KEYCLOAK_DB_USER : postgres
+      KEYCLOAK_ID : 3996c808-3e61-4f03-bdbe-98a8ebc16f7d
+      KEYCLOAK_PASSWORD : password
+      KEYCLOAK_REALM : ecosistema-auth
+      KEYCLOAK_SECRET : 83c720e5-b14d-4322-b4a1-61043d7d6cca
+      KEYCLOAK_USER : admin
+      NODE_ENV : prod
+      PORT : 3000
+      STORAGE_ACCESS_KEY : admin
+      STORAGE_API_ENDPOINT : host.docker.internal
+      STORAGE_BUCKET_NAME : sapere-bucket
+      STORAGE_IS_ENABLED : true
+      STORAGE_PORT : 9000
+      STORAGE_ACCESS_KEY: minioadmin
+      STORAGE_SECRET_KEY: minioadmin
+      STORAGE_USE_SSL: false
+      SUPPORT_EMAIL : soporte.gestionpedagogica@avefenix.edu.co
+      WEB_LOGIN : http://tumlab.local:3003/login
+      WEB_SUPPORT : https://soporte.gestionpedagogica.avefenix.edu.co
     ports:
       - "4010:3000"
     networks:
@@ -75,3 +122,6 @@ services:
 networks:
   valle-sapere-net:
     driver: bridge
+volumes:
+  minio_data:
+    driver: local
