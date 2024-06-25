@@ -61,7 +61,6 @@ services:
       KEYCLOAK_USER : admin
       NODE_ENV : prod
       PORT : 3000
-      STORAGE_ACCESS_KEY : admin
       STORAGE_API_ENDPOINT : host.docker.internal
       STORAGE_BUCKET_NAME : sapere-bucket
       STORAGE_IS_ENABLED : true
