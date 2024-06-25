@@ -28,7 +28,7 @@ services:
     volumes:
       - 'minio_data:/data'
   sapere-back:
-    image: vallelabs/sapere-backend:0.6.4-tumlab
+    image: vallelabs/sapere-backend:0.6.5-tumlab
     container_name: sapere-back
     restart: always
     extra_hosts:
