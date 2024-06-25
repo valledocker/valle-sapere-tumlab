@@ -28,7 +28,7 @@ services:
     volumes:
       - 'minio_data:/data'
   sapere-back:
-    image: vallelabs/sapere-backend:0.6.1
+    image: vallelabs/sapere-backend:0.6.4-tumlab
     container_name: sapere-back
     restart: always
     extra_hosts:
@@ -71,6 +71,8 @@ services:
       SUPPORT_EMAIL : soporte.gestionpedagogica@avefenix.edu.co
       WEB_LOGIN : http://tumlab.local:3003/login
       WEB_SUPPORT : https://soporte.gestionpedagogica.avefenix.edu.co
+      CORS_WHITELIST : http://tumlab.local:3003,http://tumlab.local:8079,http://tumlab.local:4010,http://tumlab.local:2999
+      IS_TUMLAB : true
     ports:
       - "4010:3000"
     networks:
